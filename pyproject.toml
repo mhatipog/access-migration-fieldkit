@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "access-fieldkit"
+version = "0.1.0"
+description = "Read-only Access database inventory, loss-aware export, and migration reconciliation"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "Metin Hatipogullari"}]
+keywords = ["microsoft-access", "accdb", "mdb", "migration", "sqlite", "database"]
+
+[project.scripts]
+access-fieldkit = "access_fieldkit.__main__:main"
+
+[tool.setuptools.package-data]
+access_fieldkit = ["java/*.java"]
+
+[tool.setuptools]
+packages = ["access_fieldkit"]

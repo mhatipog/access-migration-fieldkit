@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.cache/
+*.accdb
+*.mdb
+*.sqlite
+*.jsonl
+out/
+build/
+dist/
