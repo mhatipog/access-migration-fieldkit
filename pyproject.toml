@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Read-only Access database inventory, loss-aware export, and migration reconciliation"
 requires-python = ">=3.10"
 license = "MIT"
-authors = [{name = "Metin Hatipogullari"}]
+authors = [{name = "mhatipog"}]
 keywords = ["microsoft-access", "accdb", "mdb", "migration", "sqlite", "database"]
 
 [project.scripts]
