@@ -11,7 +11,7 @@ Fieldkit does **not** claim to convert an Access application. It's a read-only s
 Requires Python 3.10+, Java JDK 11+, and an Internet connection for the first run to retrieve Jackcess 5.0.4 from Maven Central. The downloaded JAR is checked against the pinned SHA-256. You can also pass a verified local JAR with `--jackcess-jar`.
 
 ```bash
-python -m pip install .
+python -m pip install access-fieldkit
 
 # Makes only a manifest. Does not export rows.
 access-fieldkit inspect ./legacy.accdb --out ./work/inventory
