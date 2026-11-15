@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wheel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "17" }
+      - name: Build sdist and wheel
+        run: |
+          python -m pip install --quiet build twine
+          python -m build
+          python -m twine check --strict dist/*
+      - name: Wheel ships the Java reader and the licence
+        run: |
+          python - <<'PY'
+          import glob, zipfile
+          names = zipfile.ZipFile(glob.glob("dist/*.whl")[0]).namelist()
+          for need in ("access_fieldkit/java/AccessReader.java", "access_fieldkit-", "licenses/LICENSE"):
+              assert any(need in n for n in names), need
+          PY
+      - name: Round trip on a synthetic ACCDB, using the installed wheel
+        run: |
+          python -m venv /tmp/venv
+          /tmp/venv/bin/pip install --quiet dist/*.whl
+          /tmp/venv/bin/access-fieldkit --help > /dev/null
+          cd tests && /tmp/venv/bin/python -m unittest discover -s . -v

@@ -46,17 +46,17 @@ The SQLite target is a **landing zone**, not a finalized relational schema: it r
 
 - **SQLite / local web API:** Run `load-sqlite`, then see `examples/serve_sqlite.py` for a read-only local HTTP view of the landing tables.
 - **PostgreSQL:** `examples/load_postgres.py` uses psycopg 3 to create a fresh schema and load the extracted values, including Currency as `NUMERIC(19,4)`.
-- **SQL Server / Azure SQL:** Use SSMA for the bulk SQL Server path; apply the decisions in [guides/sql-server.md](guides/sql-server.md). This repository does not pretend to be SSMA.
+- **SQL Server / Azure SQL:** Use SSMA for the bulk SQL Server path; apply the decisions in [guides/sql-server.md](https://github.com/mhatipog/access-migration-fieldkit/blob/main/guides/sql-server.md). This repository does not pretend to be SSMA.
 - **Modern application rewrite:** Inventory saved queries here. Use desktop Access on Windows to document forms, events, macros and VBA before moving those workflows into an API or new UI.
 
 ## Guides
 
-- [Start with an inventory](guides/inventory.md)
-- [Currency, NULLs, dates and difficult data](guides/data-fidelity.md)
-- [Saved queries, VBA and forms](guides/application-rewrite.md)
-- [SQL Server and SSMA](guides/sql-server.md)
-- [PostgreSQL landing](guides/postgresql.md)
-- [Cutover and rollback](guides/cutover.md)
+- [Start with an inventory](https://github.com/mhatipog/access-migration-fieldkit/blob/main/guides/inventory.md)
+- [Currency, NULLs, dates and difficult data](https://github.com/mhatipog/access-migration-fieldkit/blob/main/guides/data-fidelity.md)
+- [Saved queries, VBA and forms](https://github.com/mhatipog/access-migration-fieldkit/blob/main/guides/application-rewrite.md)
+- [SQL Server and SSMA](https://github.com/mhatipog/access-migration-fieldkit/blob/main/guides/sql-server.md)
+- [PostgreSQL landing](https://github.com/mhatipog/access-migration-fieldkit/blob/main/guides/postgresql.md)
+- [Cutover and rollback](https://github.com/mhatipog/access-migration-fieldkit/blob/main/guides/cutover.md)
 
 ## Limits worth knowing
 
@@ -64,6 +64,6 @@ Encrypted `.accdb` files may need additional codec support; this tool doesn't tr
 
 This code grew out of repeatable migrations of real-format ACE files and documented Microsoft/Jackcess limitations, **not production client migrations**. The included examples use made-up data only. Use backups, permission reviews and a write freeze when assessing an actual customer database.
 
-MIT licensed. See [LICENSE](LICENSE).
+MIT licensed. See [LICENSE](https://github.com/mhatipog/access-migration-fieldkit/blob/main/LICENSE).
 
 Maintained by [Vecture](https://vecture.be). Contributions and field reports are welcome via [GitHub issues](https://github.com/mhatipog/access-migration-fieldkit/issues).
