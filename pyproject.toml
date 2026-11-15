@@ -6,10 +6,26 @@ build-backend = "setuptools.build_meta"
 name = "access-fieldkit"
 version = "0.1.0"
 description = "Read-only Access database inventory, loss-aware export, and migration reconciliation"
+readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{name = "mhatipog"}]
 keywords = ["microsoft-access", "accdb", "mdb", "migration", "sqlite", "database"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Java",
+  "Topic :: Database",
+]
+
+[project.urls]
+Homepage = "https://github.com/mhatipog/access-migration-fieldkit"
+Issues = "https://github.com/mhatipog/access-migration-fieldkit/issues"
+Changelog = "https://github.com/mhatipog/access-migration-fieldkit/blob/main/CHANGELOG.md"
 
 [project.scripts]
 access-fieldkit = "access_fieldkit.__main__:main"
