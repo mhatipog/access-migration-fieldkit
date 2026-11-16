@@ -158,13 +158,18 @@ def reconcile(folder, target):
     manifest = read_manifest(folder)
     issues = []
     total = 0
-    with sqlite3.connect(f'file:{target.resolve()}?mode=ro', uri=True) as conn:
+    with sqlite3.connect(target.resolve().as_uri() + '?mode=ro', uri=True) as conn:
         try:
             mappings = {name:(ordinal,filename,digest) for name,ordinal,filename,digest in conn.execute('SELECT * FROM _af_metadata')}
         except sqlite3.Error as ex:
             raise ValueError('Not an access-fieldkit SQLite landing database') from ex
         if set(mappings) != {t['name'] for t in manifest['tables']}:
             issues.append('Table inventory differs between source export and target')
+        actual_tables = {row[0] for row in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table'"
+        ) if not row[0].lower().startswith('sqlite_') and row[0] != '_af_metadata'}
+        if actual_tables != {t['name'] for t in manifest['tables']}:
+            issues.append('Physical table inventory differs between source export and target')
         for table in manifest['tables']:
             name = table['name']
             if name not in mappings:
@@ -174,6 +179,16 @@ def reconcile(folder, target):
                 check_checksum(folder/table['data_file'],table['sha256'])
                 if digest!=table['sha256'] or filename!=table['data_file']:
                     issues.append(f'{name}: source fingerprint does not match landing metadata')
+                # SELECT * plus zip() silently ignored extra columns and compared
+                # renamed columns by position. Validate the physical schema first.
+                schema = conn.execute('PRAGMA table_xinfo(' + quote(name) + ')').fetchall()
+                expected_schema = [(ordinal, 'INTEGER', 1, 0)] + [
+                    (col['name'], dtype(col['type']), 0, 0) for col in table['columns']
+                ]
+                actual_schema = [(col[1], col[2].upper(), col[5], col[6]) for col in schema]
+                if actual_schema != expected_schema:
+                    issues.append(f'{name}: landing column schema differs from source export')
+                    continue
                 got = conn.execute('SELECT * FROM ' + quote(name) + ' ORDER BY ' + quote(ordinal))
                 count = 0
                 for (num,source), row in zip(iter_rows(folder,table),got):
