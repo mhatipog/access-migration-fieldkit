@@ -10,6 +10,7 @@ import os
 import sqlite3
 import tempfile
 from pathlib import Path
+from itertools import zip_longest
 
 
 def quote(name):
@@ -158,7 +159,7 @@ def reconcile(folder, target):
     manifest = read_manifest(folder)
     issues = []
     total = 0
-    with sqlite3.connect(f'file:{target.resolve()}?mode=ro', uri=True) as conn:
+    with sqlite3.connect(target.resolve().as_uri() + '?mode=ro', uri=True) as conn:
         try:
             mappings = {name:(ordinal,filename,digest) for name,ordinal,filename,digest in conn.execute('SELECT * FROM _af_metadata')}
         except sqlite3.Error as ex:
@@ -174,9 +175,21 @@ def reconcile(folder, target):
                 check_checksum(folder/table['data_file'],table['sha256'])
                 if digest!=table['sha256'] or filename!=table['data_file']:
                     issues.append(f'{name}: source fingerprint does not match landing metadata')
+                # A positional zip alone accepts removed, renamed or added columns.
+                expected_columns = [ordinal, *(c['name'] for c in table['columns'])]
+                actual_columns = [r[0] for r in conn.execute(
+                    'SELECT name FROM pragma_table_xinfo(?) ORDER BY cid', (name,))]
+                if actual_columns != expected_columns:
+                    issues.append(f'{name}: target column inventory differs from source export')
+                    continue
                 got = conn.execute('SELECT * FROM ' + quote(name) + ' ORDER BY ' + quote(ordinal))
                 count = 0
-                for (num,source), row in zip(iter_rows(folder,table),got):
+                missing = object()
+                for record, row in zip_longest(iter_rows(folder,table), got, fillvalue=missing):
+                    if record is missing or row is missing:
+                        issues.append(f'{name}: source and target row streams differ in length')
+                        break
+                    num, source = record
                     gotordinal,*values = row
                     if gotordinal!=num:
                         issues.append(f'{name}: row ordinal mismatch at {num}')
