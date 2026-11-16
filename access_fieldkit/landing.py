@@ -10,6 +10,7 @@ import os
 import sqlite3
 import tempfile
 from pathlib import Path
+from itertools import zip_longest
 
 
 def quote(name):
@@ -191,7 +192,12 @@ def reconcile(folder, target):
                     continue
                 got = conn.execute('SELECT * FROM ' + quote(name) + ' ORDER BY ' + quote(ordinal))
                 count = 0
-                for (num,source), row in zip(iter_rows(folder,table),got):
+                missing = object()
+                for record, row in zip_longest(iter_rows(folder,table), got, fillvalue=missing):
+                    if record is missing or row is missing:
+                        issues.append(f'{name}: source and target row streams differ in length')
+                        break
+                    num, source = record
                     gotordinal,*values = row
                     if gotordinal!=num:
                         issues.append(f'{name}: row ordinal mismatch at {num}')
